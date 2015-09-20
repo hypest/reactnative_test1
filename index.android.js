@@ -33,7 +33,7 @@ var test1 = React.createClass({
         <Image
           source={{uri: movie.posters.thumbnail}}
           style={styles.thumbnail} />
-       </View> 
+      </View> 
     );
   }
 });
