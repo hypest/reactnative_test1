@@ -8,6 +8,7 @@ var React = require('react-native');
 var {
   AppRegistry,
   Image,
+  ListView,
   StyleSheet,
   Text,
   View,
@@ -22,7 +23,10 @@ var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/maste
 var test1 = React.createClass({
   getInitialState: function() {
     return {
-      movies: null,
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+      loaded: false,
     };
   },
 
@@ -34,20 +38,34 @@ var test1 = React.createClass({
     fetch(REQUEST_URL)
       .then((response) => response.json())
       .then((responseData) => {
+        // make the list big
+        var a = responseData.movies;
+        a = a.concat(a);
+        a = a.concat(a);
+        a = a.concat(a);
+        a = a.concat(a);
+        a = a.concat(a);
         this.setState({
-          movies: responseData.movies,
+          dataSource: this.state.dataSource.cloneWithRows(a),
+          loaded: true,
         });
       })
       .done();
   },
 
   render: function() {
-    if (!this.state.movies) {
+    if (!this.state.loaded) {
       return this.renderLoadingView();
     }
 
-    var movie = this.state.movies[0];
-    return this.renderMovie(movie);
+    console.log("will render");
+    return (
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderMovie}
+        style={styles.listView}
+      />
+    );
   },
 
   renderLoadingView: function() {
@@ -97,6 +115,10 @@ var styles = StyleSheet.create({
   thumbnail: {
     width: 53,
     height: 81,
+  },
+  listView: {
+    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
   },
 });
 
